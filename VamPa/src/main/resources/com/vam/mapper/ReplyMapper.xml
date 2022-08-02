@@ -1,0 +1,67 @@
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.vam.mapper.ReplyMapper">
+ 
+ 	<!-- 댓글등록 -->
+ 	<insert id="enrollReply">
+ 		insert into vam_reply(bookId, memberId, content, rating)
+ 		values (#{bookId}, #{memberId}, #{content}, #{rating})
+ 	</insert>
+ 	
+ 	<!-- 댓글 존재 체크 -->
+	<select id="checkReply" resultType="integer">
+		select replyId from vam_reply 
+		where memberId = #{memberId} and bookId = #{bookId}
+	</select>
+	
+	
+	<!-- 댓글 페이징 -->
+	<select id="getReplyList" resultType="com.vam.model.ReplyDTO">
+		select replyId, bookId, memberId, content, rating, regDate
+		from vam_reply
+		where bookId = #{bookId}
+		order by regDate desc
+		limit #{skip}, #{amount}
+	</select>
+	
+	<!-- 댓글 총 갯수 -->
+	<select id="getReplyTotal" resultType="int">
+		select count(*)
+		from vam_reply
+		where bookId = #{bookId}
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateReply">
+		update vam_reply set content = #{content},
+							 rating = #{rating}
+		where replyId = #{replyId}
+	</update>
+	
+	<!-- 댓글 한개 정보 -->
+	<select id="getUpdateReply" resultType="com.vam.model.ReplyDTO">
+		select * from vam_reply where replyId = #{replyId}
+	</select>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteReply">
+		delete from vam_reply where replyId = #{replyId}
+	</delete>
+	
+	
+	<!-- 평점 평균 구하기 -->
+	<select id="getRatingAverage" resultType="double">
+		select avg(rating)
+		from vam_reply
+		where bookId = #{bookId}
+	</select>
+	
+	<!-- 평균 평점 반영하기 -->
+	<update id="updateRating">
+		update vam_book
+		set ratingAvg = #{ratingAvg}
+		where bookId = #{bookId}
+	</update>
+	
+  </mapper>
